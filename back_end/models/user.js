@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
-const userSchema = mongoose.Schema({
+var userSchema = mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, rquired: true, unique: true }
 });
+// userSchema.pre('save', function() {
+//     console.log('save', this.registry);
+// })
 
 userSchema.plugin(uniqueValidator);
 

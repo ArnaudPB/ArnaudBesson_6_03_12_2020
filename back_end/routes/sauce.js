@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const sauceCtrl = require('../controllers/sauce');
-const { deleteOne } = require('../models/sauce');
+//const { deleteOne } = require('../models/sauce');
 const auth = require('../middleware/auth');
+
+
+router.get('/about', function(req, res) {
+    res.send('About this wiki');
+})
 
 router.get('/', auth, sauceCtrl.getAllSauce);
 router.get('/:id', auth, sauceCtrl.getOneSauce);
