@@ -1,6 +1,8 @@
 const Sauce = require('../models/sauce');
 const fs = require('fs');
 const { updateOne } = require('../models/sauce');
+const multer = require('../middleware/multer-config');
+const validate = require('../middleware/validate_input');
 
 exports.getAllSauce = (req, res, next) => {
     Sauce.find()
@@ -68,3 +70,54 @@ exports.deleteSauce = (req, res, next) => {
         })
         .catch(error => res.status(500).json({ error }));
 };
+
+/**
+ * LIKE / DISLIKE
+ */
+exports.likeSauce = (req, res, next) => {
+    const userId = req.body.userId;
+    const rate = req.body.like;
+    const sauceId = req.params.id;
+    console.log(req)
+    Sauce.findOne({ _id: sauceId })
+        .then(sauce => {
+            console.log(sauce)
+                // new values
+            let newValues = {
+                usersLiked: sauce.usersLiked,
+                usersDisliked: sauce.usersDisliked,
+                likes: 0,
+                dislikes: 0
+            }
+
+
+            // Switch case:
+            switch (rate) {
+                case 1: // case: sauce's liked
+                    newValues.usersLiked.push(userId);
+                    break;
+                case -1: // case: sauce's disliked
+                    newValues.usersDisliked.push(userId);
+                    break;
+                case 0: // case: canceling like/dislike
+                    if (newValues.usersLiked.includes(userId)) {
+                        // if like's canceled
+                        const index = newValues.usersLiked.indexOf(userId);
+                        newValues.usersLiked.splice(index, 1);
+                    } else {
+                        // if dislike's canceled
+                        const index = newValues.usersDisliked.indexOf(userId);
+                        newValues.usersDisliked.splice(index, 1);
+                    }
+                    break;
+            };
+            // Calculating likes / dislikes
+            newValues.likes = newValues.usersLiked.length;
+            newValues.dislikes = newValues.usersDisliked.length;
+            // updating sauce new values
+            Sauce.updateOne({ _id: sauceId }, newValues)
+                .then(() => res.status(200).json({ message: 'Sauce notée !' }))
+                .catch(error => res.status(400).json({ error }))
+        })
+        .catch(error => res.status(500).json({ error }));
+}

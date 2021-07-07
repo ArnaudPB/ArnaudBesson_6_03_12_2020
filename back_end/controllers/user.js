@@ -13,7 +13,6 @@ exports.signup = (req, res, next) => {
                 email: cryptojs.HmacSHA256(req.body.email, process.env.EMAIL_KEY).toString(),
                 password: hash
             });
-            console.log(user.email);
             user.save()
                 .then(() => res.status(201).json({ message: 'Utilisateur créé' }))
                 .catch(error => res.status(400).json({ error }));
