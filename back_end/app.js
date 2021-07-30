@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const fs = require('fs');
+const morgan = require('morgan');
 const path = require('path');
 const sauceRoutes = require('./routes/sauce')
 const userRoutes = require('./routes/user');
@@ -25,7 +27,9 @@ app.use((req, res, next) => {
 });
 //Parse body request
 app.use(bodyParser.json());
-
+//log all request submitted to server
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }));
 
 //ROUTES
 app.use('/images', express.static(path.join(__dirname, 'images')));
