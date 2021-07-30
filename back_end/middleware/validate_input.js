@@ -50,3 +50,19 @@ exports.id = (req, res, next) => {
         next();
     }
 }
+
+/**
+ * Validation du like/dislike d'une sauce
+ */
+const likeSchema = Joi.object({
+    userId: Joi.string().trim().length(24).required(),
+    like: Joi.valid(-1, 0, 1).required()
+});
+exports.like = (req, res, next) => {
+    const { error, value } = likeSchema.validate(req.body);
+    if (error) {
+        res.status(422).json({ error: "Les données entrées sont invalides" });
+    } else {
+        next();
+    }
+};

@@ -76,14 +76,14 @@ exports.deleteSauce = (req, res, next) => {
  */
 exports.likeSauce = (req, res, next) => {
     const userId = req.body.userId;
-    const rate = req.body.like;
+    const like = req.body.like;
     const sauceId = req.params.id;
     console.log(req)
     Sauce.findOne({ _id: sauceId })
         .then(sauce => {
             console.log(sauce)
                 // new values
-            let newValues = {
+            const newValues = {
                 usersLiked: sauce.usersLiked,
                 usersDisliked: sauce.usersDisliked,
                 likes: 0,
@@ -92,7 +92,7 @@ exports.likeSauce = (req, res, next) => {
 
 
             // Switch case:
-            switch (rate) {
+            switch (like) {
                 case 1: // case: sauce's liked
                     newValues.usersLiked.push(userId);
                     break;
